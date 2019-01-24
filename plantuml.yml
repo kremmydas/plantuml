@@ -1,0 +1,48 @@
+##
+## Deployment of PlantUML Service
+##
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: plantuml
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plant-uml
+  namespace: plantuml
+  labels:
+    app: plant-uml
+spec:
+  type: NodePort
+  selector:
+    app: plant-uml 
+  ports:
+    - targetPort: 8080
+      port: 8080
+      
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plantuml-deployment
+  namespace: plantuml
+  labels:
+    app: plant-uml
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: plant-uml
+  template:
+    metadata:
+      labels:
+        app: plant-uml
+    spec:
+      containers:
+      - name: plant-uml
+        image: plantuml/plantuml-server:tomcat
+        ports:
+        - containerPort: 8080
